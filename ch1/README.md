@@ -73,4 +73,9 @@ After a load balancer and a second web server are added, we successfully solved 
 Now the web tier looks good, what about the data tier? The current design has one database and hence does not support failover and redundancy. Database replication is a common practice to address these problems.
 
 ## Database Replication
+Database replication can be used in many database management systems,usually with **master/slave** relationship between the **original**(master) and the **copies**(slave).
 
+A master database generally only supports **_write_** operations. A slave database gets copies of the data from the master database and only supports **_read_** operations.
+
+All the data-modifying commands like `insert`, `update` and `delete` must be sent to the master database. Most applications require a much higher ratio of reads to writes; thus the number of slave databases in a system is usually larger than the number of master databases as illustrated in the figure below.
+![figure 1:1](./assets/fig5.png)
