@@ -56,3 +56,21 @@ Horizontal scaling is suitable for large scale applications due to the limitatio
 
 In the previous design users connected to the application server directly. Users will be unable to access the website if the server is offline. Additionally, if many users access the web server simultaneously, 
 and the server reaches it's load limit, users will generally experience slower response or fail to connect to the server. Therefore, a **load balancer** is the right solution for this.
+
+## Load Balancer
+A load balancer evenly distributes incoming traffic among existing web servers that are defined in a load-balanced set.
+![figure 1:1](./assets/fig4.png)
+### Illustrations:
+Users connect directly to the load balancer using a public IP. This setup makes it impossible for clients(web/mobile) to reach the web servers directly anymore. 
+**Private IPs** are used for communication between the servers for security purposes. 
+A private IP is an IP address that reachable by only servers on the same network but unreachable over the internet.
+The load balancer communicates with web servers through private IPs.
+
+After a load balancer and a second web server are added, we successfully solved the problem of failover and improved the availability of the web tier. Details explained below:
+1. If server 1 goes offline, all the web traffic will be routed to server 2. This prevents the website from going offline. We will also add another new web server to the server pool to balance the load.
+2. If the website traffic grows rapidly, and two servers are not enough to handle the traffic, the load balancer will handle this problem gracefully. You only need to add more servers to the web server pool and the load balancer starts to send requests to them.
+
+Now the web tier looks good, what about the data tier? The current design has one database and hence does not support failover and redundancy. Database replication is a common practice to address these problems.
+
+## Database Replication
+
