@@ -128,5 +128,35 @@ the data store and cache is challenging. For further details, refer to the paper
 ![figure 1:1](./assets/fig8.png)
 5. **Eviction Policy:** Once the cache is full, any requests to add items to the cache might cause existing items to be removed. This is called cache eviction. Least-recently-used (LRU) is the most popular cache eviction policy. Other eviction policies, such as the Least Frequently Used (LFU) or First in First Out (FIFO), can be adopted to satisfy different use cases.
 
+## Content delivery network (CDN)
+A CDN is a network of geographically dispersed servers used to deliver static content. CDN servers cache static content e.g images, videos, CSS files, Javascript files, e.t.c.
+Here is how a CDN works at a high level: When a user visits a website, a CDN server closest to the user delivers the static files. The further the user from the CDN servers, the slower the website loads.
 
+This diagram shows how a CDN delivers content:
+![figure 1:1](./assets/fig9.png)
 
+And this is the CDN workflow:
+![figure 1:1](./assets/fig10.png)
+
+### Illustrations
+1. User A tries to get image.png by using an image URL. The URL’s domain is provided by the CDN provider. The following two image URLs are samples used to demonstrate what image URLs look like on Amazon and Akamai CDNs:
+   • https://mysite.cloudfront.net/logo.jpg
+   • https://mysite.akamai.com/image-manager/img/logo.jpg
+2.  If the CDN server does not have image.png in the cache, the CDN server requests the file from the origin, which can be a web server or online storage like Amazon S3.
+3. The origin returns image.png to the CDN server, which includes optional HTTP header Time-to-Live (TTL) which describes how long the image is cached.
+4. The CDN caches the image and returns it to User A. The image remains cached in the CDN until the TTL expires.
+5.  User B sends a request to get the same image.
+6. The image is returned from the cache as long as the TTL has not expired.
+
+### Considerations of using a CDN
+1. **Cost:** CDNs are run by third-party providers, and you are charged for data transfers in and out of the CDN. Caching infrequently used assets provides no significant benefits so you should consider moving them out of the CDN.
+2. **Setting an appropriate cache expiry:** For time-sensitive content, setting a cache expiry time is important. The cache expiry time should neither be too long nor too short. If it is too long, the content might no longer be fresh. If it is too short, it can cause repeat reloading of content from origin servers to the CDN.
+3. **CDN fallback:** You should consider how your website/application copes with CDN failure. If there is a temporary CDN outage, clients should be able to detect the problem and request resources from the origin.
+4. **Invalidating files:** You can remove a file from the CDN before it expires by performing one of the following operations:
+
+     a) Invalidate the CDN object using APIs provided by CDN vendors.
+
+     b) Use object versioning to serve a different version of the object. To version an object, you can add a parameter to the URL, such as a version number. For example, version number 2 is added to the query string: image.png?v=2.
+
+Figure 1-11 shows the design after the CDN and cache are added.
+![figure 1:1](./assets/fig11.png)
