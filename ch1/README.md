@@ -162,3 +162,25 @@ Figure 1-11 shows the design after the CDN and cache are added.
 ![figure 1:1](./assets/fig11.png)
 1. Static assets (JS, CSS, images, etc.,) are no longer served by web servers. They are fetched from the CDN for better performance.
 2. The database load is lightened by caching data.
+
+## Stateless Web Tier
+To scale the web tier horizontally, we need to consider moving state(like user session data) out of the web tier. A good practice is to store the session data in a persistent storage like relational database or NoSQL.
+Each web server in the cluster can access state data from databases. This is called **`stateless web tier`**. 
+### Stateful architecture
+The key difference between stateful and stateless architecture is ,a stateful server remembers client data(state) from one request to the next while a stateless server does not keep state information. 
+
+Example of a stateful server architecture diagram:
+![figure 1:1](./assets/fig12.png)
+In the above figure, user A’s session data and profile image are stored in Server 1. To authenticate User A, HTTP requests must be routed to Server 1. If a request is sent to other servers like Server 2, authentication would fail because Server 2 does not contain User A’s session data. Similarly, all HTTP requests from User B must be routed to Server 2; all requests from User C must be sent to Server 3.
+
+The issue is that every request from the same client must be routed to the same server. This can be done with sticky sessions in most load balancers [10]; however, this adds the overhead. Adding or removing servers is much more difficult with this approach. It is also challenging to handle server failures.
+
+### Stateless Architecture
+![figure 1:1](./assets/fig13.png)
+In this stateless architecture, HTTP requests from users can be sent to any web servers, which fetch state data from a shared data store. State data is stored in a shared data store and kept out of web servers. A stateless system is simpler, more robust, and scalable.
+
+Updated design with a stateless web tier.
+![figure 1:1](./assets/fig14.png)
+We moved the session data out of the web tier and store them in the persistent data store. The shared data store could be a relational database, Memcached/Redis, NoSQL, etc. The NoSQL data store is chosen as it is easy to scale. Autoscaling means adding or removing web servers automatically based on the traffic load. After the state data is removed out of web servers, auto-scaling of the web tier is easily achieved by adding or removing servers based on traffic load.
+
+Your website grows rapidly and attracts a significant number of users internationally. To improve availability and provide a better user experience across wider geographical areas, supporting multiple data centers is crucial.
