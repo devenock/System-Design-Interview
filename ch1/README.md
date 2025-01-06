@@ -160,3 +160,5 @@ And this is the CDN workflow:
 
 Figure 1-11 shows the design after the CDN and cache are added.
 ![figure 1:1](./assets/fig11.png)
+1. Static assets (JS, CSS, images, etc.,) are no longer served by web servers. They are fetched from the CDN for better performance.
+2. The database load is lightened by caching data.
