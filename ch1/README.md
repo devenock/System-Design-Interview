@@ -99,3 +99,34 @@ Let's look at the design:
 5. A web server routes any data-modifying operations to the master database. This includes write, update, and delete operations.
 
 Now, you have a solid understanding of the web and data tiers, it is time to improve the load/response time. This can be done by adding a cache layer and shifting static content (JavaScript/CSS/image/video files) to the content delivery network (CDN).
+
+## Cache
+A cache is a temporary storage area that stores result of expensive responses or frequently accessed in memory so that subsequent requests are served more quickly. As illustrated in the figure above, each time a new web page loads, one or more database calls are executed to fetch data.
+
+The application performance is greatly affected by calling the database repeatedly. The cache can mitigate this problem.
+
+### Cache Tier
+This is a temporary data store layer which is faster than the database. The benefits of having a separate cache tier include:
+1. Better system performance
+2. Ability to reduce database workloads.
+3. Ability to scale the cache tier independently.
+
+This is the possible setup of the cache tier:
+   ![figure 1:1](./assets/fig7.png)
+After receiving a request, web server first checks if the cache has all the available response. If it has, it sends data back to the client. If not, it will query the database and update the cache with by storing the query results, then update the client with this data from the cache. This caching strategy is called a **read-through cache**. 
+Other caching strategies are available depending on the data type, size and access patterns.
+
+Interacting with the caching servers is simple because most cache servers provides APIs for common programming languages.
+
+### Considerations for using cache 
+Here are a few considerations for using a cache system:
+1. **Decide when to use cache:** Consider using cache when data is read frequently but modified infrequently. Since cached data is stored in volatile memory, a cache server is not ideal for persisting data. For instance, if a cache server restarts, all the data in memory is lost. Thus, important data should be saved in persistent data stores.
+2. **Expiration policy.** It is a good practice to implement an expiration policy. Once cached data is expired, it is removed from the cache. When there is no expiration policy, cached data will be stored in the memory permanently. It is advisable not to make the expiration date too short as this will cause the system to reload data from the database too frequently. Meanwhile, it is advisable not to make the expiration date too long as the data can become stale.
+3. **Consistency:** This involves keeping the data store and the cache in sync. Inconsistency can happen because data-modifying operations on the data store and cache are not in a single transaction. When scaling across multiple regions, maintaining consistency between
+the data store and cache is challenging. For further details, refer to the paper titled “Scaling Memcache at Facebook” published by Facebook [7].
+4. **Mitigating failures:** A single cache server represents a potential single point of failure (SPOF), defined in Wikipedia as follows: “A single point of failure (SPOF) is a part of a system that, if it fails, will stop the entire system from working” [8]. As a result, multiple cache servers across different data centers are recommended to avoid SPOF. Another recommended approach is to overprovision the required memory by certain percentages. This provides a buffer as the memory usage increases.
+![figure 1:1](./assets/fig8.png)
+5. **Eviction Policy:** Once the cache is full, any requests to add items to the cache might cause existing items to be removed. This is called cache eviction. Least-recently-used (LRU) is the most popular cache eviction policy. Other eviction policies, such as the Least Frequently Used (LFU) or First in First Out (FIFO), can be adopted to satisfy different use cases.
+
+
+
