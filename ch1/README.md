@@ -184,3 +184,17 @@ Updated design with a stateless web tier.
 We moved the session data out of the web tier and store them in the persistent data store. The shared data store could be a relational database, Memcached/Redis, NoSQL, etc. The NoSQL data store is chosen as it is easy to scale. Autoscaling means adding or removing web servers automatically based on the traffic load. After the state data is removed out of web servers, auto-scaling of the web tier is easily achieved by adding or removing servers based on traffic load.
 
 Your website grows rapidly and attracts a significant number of users internationally. To improve availability and provide a better user experience across wider geographical areas, supporting multiple data centers is crucial.
+
+## Data Centers
+The figure belows shows an example setup with two data centers. In normal operations, users are geoDNS-routed, to the closest data center, with a split traffic of x% in US-East and (100 – x)% in US-West. geoDNS is a DNS service that allows domain names to be resolved to IP addresses based on the location of a user.
+![figure 1:1](./assets/fig15.png)
+
+In the event of any significant data center outage, we direct all traffic to a healthy data center. In Figure 1-16, data center 2 (US-West) is offline, and 100% of the traffic is routed to data center 1 (US-East).
+![figure 1:1](./assets/fig16.png)
+
+To achieve a multi-data center setup, several challenges must be addressed.
+1. Traffic Redirection:Effective tools are needed to direct traffic to the correct data center.GeoDNS can be used to direct traffic to the nearest data center depending on where a user is located.
+2. Data Synchronization: Users from different regions could use different local database or caches. In failover cases, traffic might be routed to a data center where data is unavailable. A common strategy to encounter this is to replicate data across multiple data centers.
+3. Test and Deployment: With multi-data center setup, it is important to test your website/application  at different locations.Automated deployment tools are vital to keep services consistent through all the data centers .
+
+To further scale our system, we need to decouple different components of the system so they can be scaled independently. Messaging queue is a key strategy employed by many real- world distributed systems to solve this problem.
