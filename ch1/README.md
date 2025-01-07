@@ -211,3 +211,23 @@ Consider the following use case: your application supports photo customization, 
 ![figure 1:1](./assets/fig18.png)
 
 
+## Logging, metrics, automation
+When working with a small website that runs on a few servers, logging, metrics and automation support are good practices but not a necessity but for large systems, it ia necessary.
+1. **Logging**: Monitoring error logs is important because it helps to identify errors and problems in the system. You can monitor error logs at per server level or use tools to aggregate them to a centralized service for easy search and viewing.
+2. **Metrics:** Collecting different types of metrics help us to gain business insights and understand the health status of the system. Some of the following metrics are useful:
+
+   • Host level metrics: CPU, Memory, disk I/O, etc.
+
+   • Aggregated level metrics: for example, the performance of the entire database tier, cache tier, etc.
+
+   • Key business metrics: daily active users, retention, revenue, etc.
+3. **Automation:** When a system gets big and complex, we need to build or leverage automation tools to improve productivity. Continuous integration is a good practice, in which each code check-in is verified through automation, allowing teams to detect problems early. Besides, automating your build, test, deploy process, etc. could improve developer productivity significantly.
+
+### Adding message queues and different tools
+Figure 1-19 shows the updated design. Due to the space constraint, only one data center is shown in the figure.
+1. The design includes a message queue, which helps to make the system more loosely coupled and failure resilient.
+2. Logging, monitoring, metrics, and automation tools are included.
+
+![figure 1:1](./assets/fig19.png)
+
+As the data grows every day, your database gets more overloaded. It is time to scale the data tier.
