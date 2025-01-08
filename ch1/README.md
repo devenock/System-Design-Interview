@@ -231,3 +231,50 @@ Figure 1-19 shows the updated design. Due to the space constraint, only one data
 ![figure 1:1](./assets/fig19.png)
 
 As the data grows every day, your database gets more overloaded. It is time to scale the data tier.
+
+## Database Scaling
+There are two main approaches for database scaling: vertical scaling and horizontal scaling.
+### Vertical Scaling
+Also known as scaling up, involves increasing the power to the existing server. Adding more CPUs, RAM or Hard-disk to the existing machine. However, vertical scaling comes with some serious drawbacks:
+1. You can add more CPU, RAM, etc. to your database server, but there are hardware limits. If you have a large user base, a single server is not enough.
+2. Greater risk of single point of failures.
+3. The overall cost of vertical scaling is high. Powerful servers are much more expensive.
+
+### Horizontal Scaling
+Also known as sharding(scaling out) involves adding more servers.
+
+The figure below compares vertical and horizontal scaling.
+![figure 1:1](./assets/fig20.png)
+
+Sharding separates a large database into smaller, more easily managed parts called shards. Each shard share the same schema but the actual data in each shard is unique.
+
+Figure 1-21 shows an example of sharded databases. User data is allocated to a database server based on user IDs. Anytime you access data, a hash function is used to find the corresponding shard. In our example, user_id % 4 is used as the hash function. If the result
+equals to 0, shard 0 is used to store and fetch data. If the result equals to 1, shard 1 is used. The same logic applies to other shards.
+![figure 1:1](./assets/fig21.png)
+
+Figure 1-22 shows the user table in sharded databases.
+![figure 1:1](./assets/fig22.png)
+
+The most important factor to consider when implementing a sharding strategy is the choice of the **sharding key**. The sharding key, also known as the **partition key** consist of one or more columns that determines how data is distributed.As shown in Figure 1-22, “user_id” is the sharding key. A sharding key allows you to retrieve and modify data efficiently by routing database queries to the correct database. When choosing a sharding key, one of the most important
+criteria is to choose a key that can evenly distributed data.
+
+Sharding is a great technique to scale the database but it is far from a perfect solution. It introduces complexities and new challenges to the system:
+1. **Resharding data**: Resharding data is needed when 1) a single shard could no longer hold more data due to rapid growth. 2) Certain shards might experience shard exhaustion faster than others due to uneven data distribution. When shard exhaustion happens, it requires updating the sharding function and moving data around. Consistent hashing, which will be discussed in Chapter 5, is a commonly used technique to solve this problem.
+2. **Celebrity problem:** This is also called a hotspot key problem. Excessive access to a specific shard could cause server overload. Imagine data for Katy Perry, Justin Bieber, and Lady Gaga all end up on the same shard. For social applications, that shard will be overwhelmed with read operations. To solve this problem, we may need to allocate a shard for each celebrity. Each shard might even require further partition.
+3. **Join and de-normalization:**  Once a database has been sharded across multiple servers, it is hard to perform join operations across database shards. A common workaround is to de- normalize the database so that queries can be performed in a single table.
+
+In Figure 1-23, we shard databases to support rapidly increasing data traffic. At the same time, some of the non-relational functionalities are moved to a NoSQL data store to reduce the database load. Here is an article that covers many use cases of NoSQL [14].
+
+![figure 1:1](./assets/fig23.png)
+
+## Millions of users and beyond
+Scaling a system is an iterative process. Iterating on what we have learned in this chapter could get us far. More fine-tuning and new strategies are needed to scale beyond millions of users. For example, you might need to optimize your system and decouple the system to even smaller services. All the techniques learned in this chapter should provide a good foundation to tackle new challenges. To conclude this chapter, we provide a summary of how we scale our system to support millions of users:
+
+1. • Keep web tier stateless
+2. • Build redundancy at every tier
+3. • Cache data as much as you can
+4. • Support multiple data centers
+5. • Host static assets in CDN
+6. • Scale your data tier by sharding
+7. • Split tiers into individual services
+8. • Monitor your system and use automation tools
