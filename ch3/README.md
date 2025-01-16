@@ -10,3 +10,5 @@ An effective system design interview gives strong signals about a person's abili
 
 ## A 4-step process for effective system design interview
 Every system design interview is different. A great system design interview is open-ended and there is no one-size-fits-all solution. However, there are steps and common ground to cover in every system design interview. 
+
+### Step 1 - Understand the problem and establish design scope
